@@ -2,7 +2,7 @@ import { Injectable, NotFoundException, BadRequestException } from '@nestjs/comm
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { TeamPokemon } from '../trainers/team-pokemon.entity';
-import { TeamService } from './team.service';
+import { Team } from '../trainers/team.entity';
 import { PokeApiService } from './pokeapi.service';
 import { AddPokemonToTeamDto, TeamPokemonResponseDto } from '../dtos/pokemon.dto';
 
@@ -11,13 +11,20 @@ export class TeamPokemonService {
   constructor(
     @InjectRepository(TeamPokemon)
     private readonly teamPokemonRepository: Repository<TeamPokemon>,
-    private readonly teamService: TeamService,
+    @InjectRepository(Team)
+    private readonly teamRepository: Repository<Team>,
     private readonly pokeApiService: PokeApiService,
   ) {}
 
   async addPokemonToTeam(teamId: string, addPokemonDto: AddPokemonToTeamDto): Promise<TeamPokemonResponseDto> {
     // Verifica se o time existe
-    await this.teamService.findOne(teamId);
+    const team = await this.teamRepository.findOne({
+      where: { id: teamId },
+    });
+
+    if (!team) {
+      throw new NotFoundException(`Time com ID ${teamId} não encontrado`);
+    }
 
     // Valida se o Pokémon existe na PokéAPI
     const pokemonExists = await this.pokeApiService.validatePokemonExists(addPokemonDto.pokemonIdOrName);
@@ -67,7 +74,13 @@ export class TeamPokemonService {
 
   async removePokemonFromTeam(teamId: string, pokemonId: string): Promise<void> {
     // Verifica se o time existe
-    await this.teamService.findOne(teamId);
+    const team = await this.teamRepository.findOne({
+      where: { id: teamId },
+    });
+
+    if (!team) {
+      throw new NotFoundException(`Time com ID ${teamId} não encontrado`);
+    }
 
     const teamPokemon = await this.teamPokemonRepository.findOne({
       where: { id: pokemonId, teamId },
@@ -82,7 +95,13 @@ export class TeamPokemonService {
 
   async getTeamPokemons(teamId: string): Promise<TeamPokemonResponseDto[]> {
     // Verifica se o time existe
-    await this.teamService.findOne(teamId);
+    const team = await this.teamRepository.findOne({
+      where: { id: teamId },
+    });
+
+    if (!team) {
+      throw new NotFoundException(`Time com ID ${teamId} não encontrado`);
+    }
 
     const teamPokemons = await this.teamPokemonRepository.find({
       where: { teamId },

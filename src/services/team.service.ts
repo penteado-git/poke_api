@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Team } from '../trainers/team.entity';
-import { TrainerService } from './trainer.service';
+import { Trainer } from '../trainers/trainer.entity';
 import { CreateTeamDto, UpdateTeamDto } from '../dtos/team.dto';
 
 @Injectable()
@@ -10,12 +10,19 @@ export class TeamService {
   constructor(
     @InjectRepository(Team)
     private readonly teamRepository: Repository<Team>,
-    private readonly trainerService: TrainerService,
+    @InjectRepository(Trainer)
+    private readonly trainerRepository: Repository<Trainer>,
   ) {}
 
   async create(createTeamDto: CreateTeamDto): Promise<Team> {
     // Verifica se o treinador existe
-    await this.trainerService.findOne(createTeamDto.trainerId);
+    const trainer = await this.trainerRepository.findOne({
+      where: { id: createTeamDto.trainerId },
+    });
+
+    if (!trainer) {
+      throw new NotFoundException(`Treinador com ID ${createTeamDto.trainerId} não encontrado`);
+    }
     
     const team = this.teamRepository.create(createTeamDto);
     return await this.teamRepository.save(team);
@@ -42,7 +49,13 @@ export class TeamService {
 
   async findByTrainer(trainerId: string): Promise<Team[]> {
     // Verifica se o treinador existe
-    await this.trainerService.findOne(trainerId);
+    const trainer = await this.trainerRepository.findOne({
+      where: { id: trainerId },
+    });
+
+    if (!trainer) {
+      throw new NotFoundException(`Treinador com ID ${trainerId} não encontrado`);
+    }
     
     return await this.teamRepository.find({
       where: { trainerId },
