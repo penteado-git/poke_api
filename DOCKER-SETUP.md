@@ -90,4 +90,3 @@ poke_api/
 ```
 
 
-**Próximos passos**: Execute `./docker-setup.sh start` e teste sua API dockerizada!
