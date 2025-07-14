@@ -1,0 +1,46 @@
+services:
+  # Pokémon API Application
+  pokemon-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: pokemon-api
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - DB_TYPE=sqlite
+      - DB_DATABASE=/app/data/database.sqlite
+      - PORT=3000
+    volumes:
+      # Persist SQLite database
+      - pokemon_data:/app/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # PostgreSQL Database (optional - for production)
+  postgres:
+    image: postgres:15-alpine
+    container_name: pokemon-postgres
+    environment:
+      POSTGRES_DB: pokeapi
+      POSTGRES_USER: pokemon_user
+      POSTGRES_PASSWORD: pokemon_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    profiles:
+      - postgres
+
+volumes:
+  pokemon_data:
+    driver: local
+  postgres_data:
+    driver: local

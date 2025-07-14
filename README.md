@@ -261,6 +261,32 @@ npm run test:e2e       # Testes end-to-end
 npm run test:cov       # Coverage dos testes
 ```
 
+## 🔧 Troubleshooting
+
+### Porta 3000 ocupada / Erro ao reiniciar
+
+Se a aplicação apresentar erro de porta ocupada ou precisar ser reiniciada:
+
+```bash
+# Mata qualquer processo na porta 3000 e reinicia (Linux/macOS)
+lsof -ti:3000 | xargs kill -9 2>/dev/null || true && sleep 2 && npm run start:dev
+```
+
+### Outros problemas comuns
+
+```bash
+# Limpar node_modules e reinstalar
+rm -rf node_modules package-lock.json
+npm install
+
+# Verificar se todas as dependências estão instaladas
+npm audit fix
+
+# Reset do banco SQLite
+rm -f database.sqlite
+npm run start:dev
+```
+
 ---
 
 **Desenvolvido com ❤️ usando NestJS e TypeScript**
