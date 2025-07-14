@@ -1,18 +1,5 @@
 # 🐳 Configuração do Docker - Pokémon Teams API
 
-## ✅ DOCKERIZAÇÃO COMPLETA CRIADA!
-
-Sua aplicação CRUD foi totalmente dockerizada! Aqui estão os arquivos criados:
-
-### 📁 Arquivos Docker Criados:
-
-1. **`Dockerfile`** - Imagem da aplicação Node.js
-2. **`docker-compose.yml`** - Orquestração dos serviços
-3. **`.dockerignore`** - Arquivos ignorados no build
-4. **`.env.docker`** - Variáveis de ambiente padrão
-5. **`docker-setup.sh`** - Script helper para facilitar o uso
-6. **`DOCKER.md`** - Documentação completa
-
 ### 🚀 Como Executar:
 
 #### Opção 1: Script Helper (Recomendado)
@@ -102,12 +89,5 @@ poke_api/
 └── ... outros arquivos
 ```
 
-### 🌟 Pronto para Produção!
-
-Sua aplicação agora pode ser facilmente deployada em:
-- Docker Swarm
-- Kubernetes
-- Docker containers simples
-- Qualquer cloud provider
 
 **Próximos passos**: Execute `./docker-setup.sh start` e teste sua API dockerizada!
